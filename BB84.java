@@ -16,8 +16,6 @@ public class BB84
 
     public static void main(String[] args) 
     {
-        Boolean isEveExist = (new Random().nextInt(2) == 0) ? true : false;
-
         /* Step 1. Alice chooses a string of random bits and a random choice of basis for each bit */
         // Alice chooses a string of random bits
         int[] aliceBits = generateRandomBitStream(BITS_LENGTH);  
@@ -50,6 +48,8 @@ public class BB84
 
 
         /* Step 3. If there is an eavesdropper , eve steals the encoded_message */
+        Boolean isEveExist = (new Random().nextInt(2) == 0) ? true : false;
+
         if(isEveExist) {
             System.out.println("There is an eavesdropper.");
 
@@ -215,24 +215,24 @@ public class BB84
         System.out.println();
     }
 
-    private static char[] measureEncodedMessage(char[] encodedMessage, char[] bobBases)
+    private static char[] measureEncodedMessage(char[] encodedMessage, char[] bases)
     {
         Random rnd = new Random();
 
         char[] measureResult = new char[BITS_LENGTH];
 
         for(int i=0 ; i<encodedMessage.length ; i++) {
-            if(encodedMessage[i] == Z_BASES_ONE || encodedMessage[i] == Z_BASES_ZERO) {
-                if(bobBases[i] == Z_POLARIZER) measureResult[i] = encodedMessage[i];
-                else {
-                    measureResult[i] = (rnd.nextInt(2)%2 == 1) ? Z_BASES_ONE : Z_BASES_ZERO;
+            if(bases[i] == Z_POLARIZER) {
+                if(encodedMessage[i] == Z_BASES_ONE || encodedMessage[i] == Z_BASES_ZERO) {
+                    measureResult[i] = encodedMessage[i];
                 }
+                else measureResult[i] = (rnd.nextInt(2)%2 == 1) ? Z_BASES_ONE : Z_BASES_ZERO;
             }
-            else {
-                if(bobBases[i] == X_POLARIZER) measureResult[i] = encodedMessage[i];
-                else {
-                    measureResult[i] = (rnd.nextInt(2)%2 == 1) ? X_BASES_ONE : X_BASES_ZERO;
+            else if(bases[i] == X_POLARIZER) {
+                if(encodedMessage[i] == X_BASES_ONE || encodedMessage[i] == X_BASES_ZERO) {
+                    measureResult[i] = encodedMessage[i];
                 }
+                else measureResult[i] = (rnd.nextInt(2)%2 == 1) ? X_BASES_ONE : X_BASES_ZERO;
             }
         }
 

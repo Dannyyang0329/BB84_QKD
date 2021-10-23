@@ -6,10 +6,10 @@ public class BB84
     private final static char Z_POLARIZER = '+';
     private final static char X_POLARIZER = 'x';
 
-    private final static char X_BASES_ONE = '\\';
-    private final static char X_BASES_ZERO = '/';
-    private final static char Z_BASES_ONE = '-';
-    private final static char Z_BASES_ZERO = '|';
+    private final static char X_BASIS_ONE = '\\';
+    private final static char X_BASIS_ZERO = '/';
+    private final static char Z_BASIS_ONE = '-';
+    private final static char Z_BASIS_ZERO = '|';
 
     private final static int KEY_SHARE_SIZE = 10;   // ~95% detected
 
@@ -21,28 +21,28 @@ public class BB84
         int[] aliceBits = generateRandomBitStream(BITS_LENGTH);  
         printAliceBitStream(aliceBits); 
 
-        // Alice chooses some random bases
-        char[] aliceBases = generateRandomBases(BITS_LENGTH);   
-        printBases(aliceBases, "Alice");
+        // Alice chooses some random basis
+        char[] aliceBasis = generateRandomBasis(BITS_LENGTH);   
+        printBasis(aliceBasis, "Alice");
 
         System.out.println();
 
         /* Alice's acknowledge | Eve's acknowledge | Bob's acknowledge 
          *      aliceBits      |                   |
-         *      aliceBases     |                   |
+         *      aliceBasis     |                   |
          */
 
 
         /* Step 2. Alice encodes the bits and sends the encoded message to Bob */
         // ALice encodes the bits
-        char[] encodedMessage = encode_message(aliceBits, aliceBases);
+        char[] encodedMessage = encode_message(aliceBits, aliceBasis);
         printEncodedMessage(encodedMessage);
 
         System.out.println();
 
         /* Alice's acknowledge | Eve's acknowledge | Bob's acknowledge 
          *      aliceBits      |                   |
-         *      aliceBases     |                   |
+         *      aliceBasis     |                   |
          *   encoded_message   |  encoded_message  |  encoded_message               
          */
 
@@ -53,12 +53,12 @@ public class BB84
         if(isEveExist) {
             System.out.println("There is an eavesdropper.");
 
-            // Eve uses random bases
-            char[] eveBases = generateRandomBases(BITS_LENGTH);
-            printBases(eveBases, "Eve");
+            // Eve uses random basis
+            char[] eveBasis = generateRandomBasis(BITS_LENGTH);
+            printBasis(eveBasis, "Eve");
             
             // Eve tries to measure the encoded_message
-            char[] eveMeasureResult = measureEncodedMessage(encodedMessage, eveBases);
+            char[] eveMeasureResult = measureEncodedMessage(encodedMessage, eveBasis);
             printMeasureMessage(eveMeasureResult);
 
             // Eve sends the encoded_message in order to hide herself
@@ -69,48 +69,48 @@ public class BB84
 
         /* Alice's acknowledge | Eve's acknowledge | Bob's acknowledge 
          *      aliceBits      |                   |
-         *      aliceBases     |                   |
+         *      aliceBasis     |                   |
          *   encoded_message   |  encoded_message  |  encoded_message*               
          */
         
 
         /* Step 4. Bob measures the message at random basis */
-        // Bob chooses random bases
-        char[] bobBases = generateRandomBases(BITS_LENGTH);
-        printBases(bobBases, "Bob");
+        // Bob chooses random basis
+        char[] bobBasis = generateRandomBasis(BITS_LENGTH);
+        printBasis(bobBasis, "Bob");
 
         // Bob knows the result after measuring
-        char[] bobMeasureResult = measureEncodedMessage(encodedMessage, bobBases);
+        char[] bobMeasureResult = measureEncodedMessage(encodedMessage, bobBasis);
         printMeasureMessage(bobMeasureResult);
 
         System.out.println();
 
         /* Alice's acknowledge | Eve's acknowledge | Bob's acknowledge 
          *      aliceBits      |                   |
-         *      aliceBases     |                   |
+         *      aliceBasis     |                   |
          *   encoded_message   |  encoded_message  |  encoded_message*               
-         *                     |                   |      bobBases
+         *                     |                   |      bobBasis
          *                     |                   |  bobMeasureResult
          */
 
         
         /* Step 5. Alice and Bob publicly share thier basis */
-        System.out.println("Alice shares the bases she used to Bob.");
-        System.out.println("Bob shares the bases he used to Alice.");
+        System.out.println("Alice shares the basis she used to Bob.");
+        System.out.println("Bob shares the basis he used to Alice.");
 
-        String aliceKey = generateKeyForAlice(aliceBases, bobBases, aliceBits);
-        String bobKey = generateKeyForBob(aliceBases, bobBases, bobMeasureResult);
+        String aliceKey = generateKeyForAlice(aliceBasis, bobBasis, aliceBits);
+        String bobKey = generateKeyForBob(aliceBasis, bobBasis, bobMeasureResult);
 
         System.out.println();
 
         /* Alice's acknowledge | Eve's acknowledge | Bob's acknowledge 
          *      aliceBits      |                   |
-         *      aliceBases     |                   |
+         *      aliceBasis     |                   |
          *   encoded_message   |  encoded_message  |  encoded_message*               
-         *                     |                   |      bobBases
+         *                     |                   |      bobBasis
          *                     |                   |  bobMeasureResult
-         *                     |     aliceBases    |     aliceBases
-         *      bobBases       |      bobBases     |               
+         *                     |     aliceBasis    |     aliceBasis
+         *      bobBasis       |      bobBasis     |               
          *      aliceKey       |                   |       bobKey
          */
 
@@ -118,8 +118,8 @@ public class BB84
         /* Step 6. Alice and Bob share a section of their key to determine that eavesdropper
          *         doesn't exist and the key is valid.
          */
-        String bobSample = bobKey.substring(KEY_SHARE_SIZE);
-        String aliceSample = aliceKey.substring(KEY_SHARE_SIZE);
+        String bobSample = bobKey.substring(0, KEY_SHARE_SIZE);
+        String aliceSample = aliceKey.substring(0, KEY_SHARE_SIZE);
 
         System.out.println("Bob's sample : \t\t" + bobSample);
         System.out.println("Alice's sample : \t" + aliceSample);
@@ -135,12 +135,12 @@ public class BB84
 
         /* Alice's acknowledge | Eve's acknowledge | Bob's acknowledge 
          *      aliceBits      |                   |
-         *      aliceBases     |                   |
+         *      aliceBasis     |                   |
          *   encoded_message   |  encoded_message  |  encoded_message*               
-         *                     |                   |      bobBases
+         *                     |                   |      bobBasis
          *                     |                   |  bobMeasureResult
-         *                     |     aliceBases    |     aliceBases
-         *      bobBases       |      bobBases     |               
+         *                     |     aliceBasis    |     aliceBasis
+         *      bobBasis       |      bobBasis     |               
          *      aliceKey       |                   |       bobKey
          *      bobSample      |     bobSample     |      bobSample
          *     aliceSample     |    aliceSample    |     aliceSample  
@@ -168,38 +168,38 @@ public class BB84
         System.out.println();
     }
 
-    private static char[] generateRandomBases(int numOfBases) 
+    private static char[] generateRandomBasis(int numOfBasis) 
     {
         Random rnd = new Random();        
 
-        char[] bases = new char[numOfBases];
+        char[] basis = new char[numOfBasis];
 
-        for(int i=0 ; i<numOfBases ; i++) {
-            bases[i] = (rnd.nextInt(2) == 1) ? Z_POLARIZER : X_POLARIZER;
+        for(int i=0 ; i<numOfBasis ; i++) {
+            basis[i] = (rnd.nextInt(2) == 1) ? Z_POLARIZER : X_POLARIZER;
         } 
 
-        return bases;
+        return basis;
     }
 
-    private static void printBases(char[] bases, String name)
+    private static void printBasis(char[] basis, String name)
     {
-        System.out.print(name + "'s bases is : \t\t");
-        for(int i=0 ; i<bases.length ; i++) {
-            System.out.print(bases[i] + " ");
+        System.out.print(name + "'s basis is : \t\t");
+        for(int i=0 ; i<basis.length ; i++) {
+            System.out.print(basis[i] + " ");
         }
         System.out.println();
     }
 
-    private static char[] encode_message(int[] bitStream, char[] bases)
+    private static char[] encode_message(int[] bitStream, char[] basis)
     {
         char[] encodedMessage = new char[BITS_LENGTH];
 
         for(int i=0 ; i<encodedMessage.length ; i++) {
-            if(bases[i] == Z_POLARIZER) {
-                encodedMessage[i] = (bitStream[i] == 0) ? Z_BASES_ZERO : Z_BASES_ONE;
+            if(basis[i] == Z_POLARIZER) {
+                encodedMessage[i] = (bitStream[i] == 0) ? Z_BASIS_ZERO : Z_BASIS_ONE;
             }
-            else if(bases[i] == X_POLARIZER) {
-                encodedMessage[i] = (bitStream[i] == 0) ? X_BASES_ZERO : X_BASES_ONE;
+            else if(basis[i] == X_POLARIZER) {
+                encodedMessage[i] = (bitStream[i] == 0) ? X_BASIS_ZERO : X_BASIS_ONE;
             }
         }
 
@@ -215,24 +215,24 @@ public class BB84
         System.out.println();
     }
 
-    private static char[] measureEncodedMessage(char[] encodedMessage, char[] bases)
+    private static char[] measureEncodedMessage(char[] encodedMessage, char[] basis)
     {
         Random rnd = new Random();
 
         char[] measureResult = new char[BITS_LENGTH];
 
         for(int i=0 ; i<encodedMessage.length ; i++) {
-            if(bases[i] == Z_POLARIZER) {
-                if(encodedMessage[i] == Z_BASES_ONE || encodedMessage[i] == Z_BASES_ZERO) {
+            if(basis[i] == Z_POLARIZER) {
+                if(encodedMessage[i] == Z_BASIS_ONE || encodedMessage[i] == Z_BASIS_ZERO) {
                     measureResult[i] = encodedMessage[i];
                 }
-                else measureResult[i] = (rnd.nextInt(2)%2 == 1) ? Z_BASES_ONE : Z_BASES_ZERO;
+                else measureResult[i] = (rnd.nextInt(2)%2 == 1) ? Z_BASIS_ONE : Z_BASIS_ZERO;
             }
-            else if(bases[i] == X_POLARIZER) {
-                if(encodedMessage[i] == X_BASES_ONE || encodedMessage[i] == X_BASES_ZERO) {
+            else if(basis[i] == X_POLARIZER) {
+                if(encodedMessage[i] == X_BASIS_ONE || encodedMessage[i] == X_BASIS_ZERO) {
                     measureResult[i] = encodedMessage[i];
                 }
-                else measureResult[i] = (rnd.nextInt(2)%2 == 1) ? X_BASES_ONE : X_BASES_ZERO;
+                else measureResult[i] = (rnd.nextInt(2)%2 == 1) ? X_BASIS_ONE : X_BASIS_ZERO;
             }
         }
 
@@ -248,12 +248,12 @@ public class BB84
         System.out.println();
     }
 
-    private static String generateKeyForAlice(char[] aliceBases, char[] bobBases, int[] bitStream) 
+    private static String generateKeyForAlice(char[] aliceBasis, char[] bobBasis, int[] bitStream) 
     {
         String key = "";
 
         for(int i=0 ; i<BITS_LENGTH ; i++) {
-            if(aliceBases[i] == bobBases[i]) {
+            if(aliceBasis[i] == bobBasis[i]) {
                 key += Integer.toString(bitStream[i]);
             }
         }
@@ -261,23 +261,23 @@ public class BB84
         return key;
     }
 
-    private static String generateKeyForBob(char[] aliceBases, char[] bobBases, char[] bobMeasureResult) 
+    private static String generateKeyForBob(char[] aliceBasis, char[] bobBasis, char[] bobMeasureResult) 
     {
         String key = "";
 
         for(int i=0 ; i<BITS_LENGTH ; i++) {
-            if(aliceBases[i] == bobBases[i]) {
+            if(aliceBasis[i] == bobBasis[i]) {
                 switch(bobMeasureResult[i]) {
-                    case Z_BASES_ONE:
+                    case Z_BASIS_ONE:
                         key += "1";
                         break;
-                    case Z_BASES_ZERO:
+                    case Z_BASIS_ZERO:
                         key += "0";
                         break;
-                    case X_BASES_ONE:
+                    case X_BASIS_ONE:
                         key += "1";
                         break;
-                    case X_BASES_ZERO:
+                    case X_BASIS_ZERO:
                         key += "0";
                         break;
                 }

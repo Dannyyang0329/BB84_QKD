@@ -2,9 +2,7 @@
 
 ## How to execute?
 
-:::info
-$ clear && javac BB84.java && java BB84
-:::
+> clear  &&  javac BB84.java  &&  java BB84
 
 ## Display
 

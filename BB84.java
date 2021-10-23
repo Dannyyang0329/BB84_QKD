@@ -8,8 +8,8 @@ public class BB84
 
     private final static char X_BASIS_ONE = '\\';
     private final static char X_BASIS_ZERO = '/';
-    private final static char Z_BASIS_ONE = '-';
-    private final static char Z_BASIS_ZERO = '|';
+    private final static char Z_BASIS_ONE = '|';
+    private final static char Z_BASIS_ZERO = '-';
 
     private final static int KEY_SHARE_SIZE = 10;   // ~95% detected
 
